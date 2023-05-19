@@ -8,8 +8,13 @@ from uc3m_logistics.attributes.product_id import ProductId
 from uc3m_logistics.attributes.address import Address
 from uc3m_logistics.attributes.phone_number import PhoneNumber
 from uc3m_logistics.attributes.zip_code import ZipCode
+from uc3m_logistics.attributes.date import Date
 from uc3m_logistics.storage.orders_json_store import OrdersJsonStore
+from uc3m_logistics.storage.shipments_json_store import ShipmentsJsonStore
+from uc3m_logistics.storage.shipments_cancelled import ShipmentsCancelled
+from uc3m_logistics.storage.date_zip_store import DateZipStore
 from freezegun import freeze_time
+from uc3m_logistics.inputs.order_input import OrderInputFile
 
 class OrderRequest:
     """Class representing the register of the order in the system"""
@@ -49,6 +54,74 @@ class OrderRequest:
         if order.order_id != order_id:
             raise OrderManagementException("Orders' data have been manipulated")
         return order
+
+    @classmethod
+    def get_order_request_from_file(cls, input_file):
+        """gets the order from the store"""
+        order_file = OrderInputFile(input_file)
+        orders_store = OrdersJsonStore()
+        found = orders_store.find_item(order_file.order_id, "_OrderRequest__order_id")
+        if not found:
+            raise OrderManagementException("order_id not found")
+        return order_file.order_id
+
+    @classmethod
+    def cancel_request(cls, order_id: str):
+        """cancels the order"""
+        cls.check_if_sent(order_id)
+        orders_store = OrdersJsonStore()
+        item_removed = orders_store.remove_item(order_id, "_OrderRequest__order_id")
+        cls.add_to_cancelled(item_removed)
+
+    @classmethod
+    def add_to_cancelled(cls, item_removed):
+        orders_cancelled = ShipmentsCancelled()
+        orders_cancelled.add_item(item_removed)
+
+    @staticmethod
+    def check_if_sent(order_id):
+        shipment_store = ShipmentsJsonStore()
+        found = shipment_store.find_item(order_id, "_OrderShipping__order_id")
+        if found:
+            raise OrderManagementException("Order has been sent")
+
+    @classmethod
+    def show_delivers(cls, date_p, zip_code_p):
+        date, zip_code, timestamp = cls.validate_date_zip_code(date_p, zip_code_p)
+        orders = cls.orders_date_zip_code(timestamp, zip_code)
+        cls.store_orders_date_zip_code(date, orders, zip_code)
+    @classmethod
+    def store_orders_date_zip_code(cls,date, orders, zip_code):
+        date_file = ''.join(date.split('-'))
+        storage = DateZipStore(date_file, zip_code)
+        storage._data_list = orders
+        storage.save()
+
+    @staticmethod
+    def orders_date_zip_code(timestamp, zip_code):
+        orders_store = OrdersJsonStore()
+        key1 = "_OrderRequest__time_stamp"
+        key2 = "_OrderRequest__zip_code"
+        shipments = orders_store.find_items_2_keys(timestamp, zip_code, key1, key2)
+        return shipments
+
+    @staticmethod
+    def validate_date_zip_code(date, zip_code):
+        day = int(date[8:10])
+        if day < 10:
+            day = "0" + str(day)
+        month = int(date[5:7])
+        if month < 10:
+            month = "0" + str(month)
+        year = int(date[0:4])
+        date = str(day) + "-" + str(month) + "-" + str(year)
+        date = Date(date).value
+        timestamp= datetime.strptime(date, '%Y-%m-%d').timestamp()
+
+        print(zip_code)
+        zip_code = ZipCode(zip_code).value
+        return date, zip_code, timestamp
+
 
     def save( self ):
         """saves the order into the store"""

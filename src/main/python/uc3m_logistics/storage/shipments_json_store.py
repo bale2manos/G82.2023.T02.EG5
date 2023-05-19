@@ -9,6 +9,8 @@ class ShipmentsJsonStore():
         """ShipmnetsStore private class"""
         _file_name = JSON_FILES_PATH + "shipments_store.json"
 
+
+
     instance = None
 
     def __new__( cls ):

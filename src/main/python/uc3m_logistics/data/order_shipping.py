@@ -10,6 +10,8 @@ from uc3m_logistics.data.order_delivered import OrderDelivered
 from uc3m_logistics.attributes.tracking_code import TrackingCode
 from uc3m_logistics.attributes.email import Email
 from uc3m_logistics.attributes.order_id import OrderId
+from uc3m_logistics.attributes.date import Date
+from uc3m_logistics.attributes.zip_code import ZipCode
 
 #pylint: disable=too-many-instance-attributes
 class OrderShipping():
@@ -77,6 +79,8 @@ class OrderShipping():
         else:
             raise OrderManagementException("Today is not the delivery date")
         return True
+
+
 
     @property
     def product_id( self ):

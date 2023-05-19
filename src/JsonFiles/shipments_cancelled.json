@@ -1,15 +1,6 @@
 [
   {
     "_OrderRequest__product_id": "8421691423220",
-    "_OrderRequest__delivery_address": "calle con20chars1esp",
-    "_OrderRequest__order_type": "Regular",
-    "_OrderRequest__phone_number": "+34123456789",
-    "_OrderRequest__zip_code": "01000",
-    "_OrderRequest__time_stamp": 1678233600.0,
-    "_OrderRequest__order_id": "4f5ff74ce8c5aa97f9675dbd44035d9d"
-  },
-  {
-    "_OrderRequest__product_id": "8421691423220",
     "_OrderRequest__delivery_address": "calle con19chars1esp",
     "_OrderRequest__order_type": "Regular",
     "_OrderRequest__phone_number": "+34666666666",
@@ -22,8 +13,8 @@
     "_OrderRequest__delivery_address": "calle con19chars1esp",
     "_OrderRequest__order_type": "Regular",
     "_OrderRequest__phone_number": "+34666666666",
-    "_OrderRequest__zip_code": "01100",
+    "_OrderRequest__zip_code": "01000",
     "_OrderRequest__time_stamp": 1678233600.0,
-    "_OrderRequest__order_id": "cab754b2a95bb39d4de1c017551627d3"
+    "_OrderRequest__order_id": "6e230082fd91e2c43fa23ff29556dbfd"
   }
 ]
